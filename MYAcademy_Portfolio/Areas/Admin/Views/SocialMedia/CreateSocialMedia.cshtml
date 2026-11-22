@@ -1,0 +1,372 @@
+﻿@model MYAcademy_Portfolio.Entities.SocialMedia
+
+@{
+    ViewData["Title"] = "Sosyal Medya Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    // (Bootstrap Icons sınıfı, görünen ad)
+    var icons = new (string Icon, string Label)[]
+    {
+        ("bi-github", "GitHub"), ("bi-linkedin", "LinkedIn"), ("bi-medium", "Medium"),
+        ("bi-twitter-x", "X (Twitter)"), ("bi-instagram", "Instagram"), ("bi-facebook", "Facebook"),
+        ("bi-youtube", "YouTube"), ("bi-whatsapp", "WhatsApp"), ("bi-telegram", "Telegram"),
+        ("bi-discord", "Discord"), ("bi-twitch", "Twitch"), ("bi-reddit", "Reddit"),
+        ("bi-stack-overflow", "Stack Overflow"), ("bi-envelope", "E-posta"), ("bi-globe", "Web Sitesi"),
+        ("bi-tiktok", "TikTok"), ("bi-pinterest", "Pinterest"), ("bi-spotify", "Spotify"),
+        ("bi-dribbble", "Dribbble"), ("bi-behance", "Behance"), ("bi-google", "Google"),
+        ("bi-slack", "Slack"), ("bi-mastodon", "Mastodon"), ("bi-snapchat", "Snapchat")
+    };
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .social-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+        .social-admin .card-soft .card-header {
+            background: transparent;
+            border-bottom: 1px solid #eef0f6;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .social-admin .card-soft .card-body {
+            padding: 1.5rem;
+        }
+
+    .social-admin .form-label {
+        font-weight: 600;
+        font-size: .85rem;
+        color: #475069;
+        margin-bottom: .4rem;
+    }
+
+    .social-admin .input-group-text {
+        background: #f4f2ff;
+        border: 1px solid #e3e0f7;
+        color: #6d5dfc;
+        border-right: 0;
+        border-radius: .75rem 0 0 .75rem;
+    }
+
+    .social-admin .form-control {
+        border: 1px solid #e3e0f7;
+        border-radius: .75rem;
+        padding: .65rem .9rem;
+    }
+
+    .social-admin .input-group .form-control {
+        border-left: 0;
+        border-radius: 0 .75rem .75rem 0;
+    }
+
+    .social-admin .form-control:focus {
+        border-color: #6d5dfc;
+        box-shadow: 0 0 0 .2rem rgba(109, 93, 252, .15);
+    }
+
+    .social-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .social-admin .btn-primary-soft {
+        background: #6d5dfc;
+        border: 0;
+        color: #fff;
+        border-radius: .75rem;
+        padding: .7rem 1.6rem;
+        font-weight: 600;
+    }
+
+        .social-admin .btn-primary-soft:hover {
+            background: #5847e6;
+            color: #fff;
+        }
+
+    .social-admin .btn-ghost {
+        border: 1px solid #e3e0f7;
+        border-radius: .75rem;
+        padding: .7rem 1.4rem;
+        color: #475069;
+        background: #fff;
+        text-decoration: none;
+    }
+
+    /* İkon seçici */
+    .social-admin .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+        gap: .6rem;
+    }
+
+        .social-admin .icon-grid input {
+            display: none;
+        }
+
+        .social-admin .icon-grid label {
+            border: 1px solid #e3e0f7;
+            border-radius: .9rem;
+            padding: .7rem .4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .35rem;
+            cursor: pointer;
+            background: #fff;
+            color: #475069;
+            transition: .15s;
+            text-align: center;
+        }
+
+            .social-admin .icon-grid label i {
+                font-size: 1.4rem;
+            }
+
+            .social-admin .icon-grid label span {
+                font-size: .7rem;
+                line-height: 1.1;
+            }
+
+            .social-admin .icon-grid label:hover {
+                border-color: #6d5dfc;
+                color: #6d5dfc;
+            }
+
+        .social-admin .icon-grid input:checked + label {
+            background: #6d5dfc;
+            border-color: #6d5dfc;
+            color: #fff;
+        }
+
+        .social-admin .icon-grid .hide {
+            display: none;
+        }
+
+    .social-admin .status-box {
+        background: #f4f2ff;
+        border-radius: .75rem;
+        padding: .35rem .9rem;
+    }
+
+    /* Önizleme */
+    .social-admin .sticky-preview {
+        position: sticky;
+        top: 1.5rem;
+    }
+
+    .social-admin .pv-btn {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: 1px solid #e3e0f7;
+        background: #fff;
+        color: #475069;
+        display: grid;
+        place-items: center;
+        font-size: 1.4rem;
+        box-shadow: 0 6px 18px rgba(109, 93, 252, .12);
+    }
+
+    .social-admin .pv-url {
+        word-break: break-all;
+        font-size: .82rem;
+        color: #6d5dfc;
+    }
+</style>
+
+<div class="container-fluid social-admin py-4">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="icon-box"><i class="bi bi-plus-circle"></i></div>
+        <div>
+            <h4 class="mb-0 fw-bold">Yeni Sosyal Medya Ekle</h4>
+            <span class="text-secondary small">Eklediğin bağlantı sitedeki sosyal medya alanında görünür.</span>
+        </div>
+    </div>
+
+    <form asp-area="Admin" asp-controller="SocialMedia" asp-action="CreateSocialMedia" method="post">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+        <div class="row g-4">
+
+            <!-- Sol: Form -->
+            <div class="col-xl-8">
+
+                <!-- İkon seçici -->
+                <div class="card card-soft mb-4">
+                    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-emoji-smile me-2 text-primary"></i>İkon Seç</h6>
+                        <input type="text" id="iconSearch" class="form-control form-control-sm" style="max-width: 200px; border-left: 1px solid #e3e0f7; border-radius: .75rem;" placeholder="İkon ara…" />
+                    </div>
+                    <div class="card-body">
+                        <div class="icon-grid" id="iconGrid">
+                            @foreach (var ic in icons)
+                            {
+                                <input type="radio" asp-for="MediaIcon" value="@ic.Icon" id="ic_@ic.Icon" data-label="@ic.Label" />
+                                <label for="ic_@ic.Icon" data-search="@ic.Label.ToLower() @ic.Icon">
+                                    <i class="bi @ic.Icon"></i>
+                                    <span>@ic.Label</span>
+                                </label>
+                            }
+                        </div>
+                        <span asp-validation-for="MediaIcon" class="text-danger small d-block mt-2"></span>
+                        <div class="text-danger small mt-2" id="iconError" style="display:none">Lütfen bir ikon seçin.</div>
+                    </div>
+                </div>
+
+                <!-- Bilgiler -->
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-link-45deg me-2 text-primary"></i>Bağlantı Bilgileri</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label asp-for="MediaName" class="form-label">Platform Adı</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                    <input asp-for="MediaName" class="form-control" placeholder="Örn: GitHub" />
+                                </div>
+                                <span asp-validation-for="MediaName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Durum</label>
+                                <div class="status-box d-flex align-items-center justify-content-between">
+                                    <span class="small fw-semibold" id="statusText">Aktif</span>
+                                    <div class="form-check form-switch fs-4 mb-0">
+                                        <input asp-for="IsActive" class="form-check-input" role="switch" />
+                                    </div>
+                                </div>
+                                <div class="form-text">Pasifse sitede görünmez.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="MediaUrl" class="form-label">Bağlantı (URL)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                                    <input asp-for="MediaUrl" class="form-control" placeholder="https://github.com/kullaniciadi" />
+                                </div>
+                                <span asp-validation-for="MediaUrl" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-area="Admin" asp-controller="SocialMedia" asp-action="Index" class="btn-ghost">
+                        <i class="bi bi-arrow-left me-1"></i> Listeye Dön
+                    </a>
+                    <button type="submit" class="btn btn-primary-soft">
+                        <i class="bi bi-plus-circle me-1"></i> Ekle
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sağ: Önizleme -->
+            <div class="col-xl-4">
+                <div class="sticky-preview">
+                    <div class="card card-soft">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h6 class="mb-0 fw-bold"><i class="bi bi-eye me-2 text-primary"></i>Önizleme</h6>
+                            <span class="badge rounded-pill text-bg-light">Sitedeki görünüm</span>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="pv-btn mx-auto mb-3"><i class="bi bi-question-lg" id="pvIcon"></i></div>
+                            <div class="fw-bold" id="pvName">Platform adı</div>
+                            <div class="pv-url mt-1" id="pvUrl">https://…</div>
+                            <span class="badge rounded-pill mt-3 px-3 py-2" id="pvStatus">Aktif</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    (function () {
+        const nameInput = document.querySelector('[name="MediaName"]');
+        const urlInput = document.querySelector('[name="MediaUrl"]');
+        const radios = document.querySelectorAll('input[name="MediaIcon"]');
+        const pvIcon = document.getElementById('pvIcon');
+        const pvName = document.getElementById('pvName');
+        const pvUrl = document.getElementById('pvUrl');
+        const iconError = document.getElementById('iconError');
+        let nameTouched = false;
+
+        function selectedIcon() {
+            const r = document.querySelector('input[name="MediaIcon"]:checked');
+            return r ? r : null;
+        }
+
+        const activeToggle = document.querySelector('[name="IsActive"][type="checkbox"]');
+        const statusText = document.getElementById('statusText');
+        const pvStatus = document.getElementById('pvStatus');
+        const pvBtn = document.querySelector('.pv-btn');
+
+        function refreshStatus() {
+            const on = activeToggle.checked;
+            statusText.textContent = on ? 'Aktif' : 'Pasif';
+            pvStatus.textContent = on ? 'Sitede görünür' : 'Sitede görünmez';
+            pvStatus.className = 'badge rounded-pill mt-3 px-3 py-2 ' + (on ? 'text-bg-success' : 'text-bg-secondary');
+            pvBtn.style.opacity = on ? '1' : '.4';
+        }
+        activeToggle.addEventListener('change', refreshStatus);
+
+        function refresh() {
+            refreshStatus();
+            const r = selectedIcon();
+            pvIcon.className = 'bi ' + (r ? r.value : 'bi-question-lg');
+            pvName.textContent = nameInput.value.trim() || 'Platform adı';
+            pvUrl.textContent = urlInput.value.trim() || 'https://…';
+        }
+
+        // İkon seçilince ad boşsa platform adını otomatik doldur
+        radios.forEach(r => r.addEventListener('change', () => {
+            iconError.style.display = 'none';
+            if (!nameTouched || !nameInput.value.trim()) {
+                nameInput.value = r.dataset.label;
+            }
+            refresh();
+        }));
+
+        nameInput.addEventListener('input', () => { nameTouched = true; refresh(); });
+        urlInput.addEventListener('input', refresh);
+
+        // İkon arama
+        document.getElementById('iconSearch').addEventListener('input', e => {
+            const q = e.target.value.trim().toLowerCase();
+            document.querySelectorAll('#iconGrid label').forEach(l => {
+                l.classList.toggle('hide', q && !l.dataset.search.includes(q));
+            });
+        });
+
+        // İkon seçilmeden gönderme
+        document.querySelector('form').addEventListener('submit', e => {
+            if (!selectedIcon()) {
+                e.preventDefault();
+                iconError.style.display = 'block';
+                iconError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
+        refresh();
+    })();
+</script>

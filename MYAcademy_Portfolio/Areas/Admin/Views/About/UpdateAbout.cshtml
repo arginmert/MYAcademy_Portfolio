@@ -1,0 +1,338 @@
+﻿@model MYAcademy_Portfolio.Entities.About
+
+@{
+    ViewData["Title"] = "Hakkımda Düzenle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .about-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+        .about-admin .card-soft .card-header {
+            background: transparent;
+            border-bottom: 1px solid #eef0f6;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .about-admin .card-soft .card-body {
+            padding: 1.5rem;
+        }
+
+    .about-admin .form-label {
+        font-weight: 600;
+        font-size: .85rem;
+        color: #475069;
+        margin-bottom: .4rem;
+    }
+
+    .about-admin .input-group-text {
+        background: #f4f2ff;
+        border: 1px solid #e3e0f7;
+        color: #6d5dfc;
+        border-right: 0;
+    }
+
+    .about-admin .form-control {
+        border: 1px solid #e3e0f7;
+        border-radius: .75rem;
+        padding: .65rem .9rem;
+    }
+
+    .about-admin .input-group .form-control {
+        border-left: 0;
+        border-radius: 0 .75rem .75rem 0;
+    }
+
+    .about-admin .input-group .input-group-text {
+        border-radius: .75rem 0 0 .75rem;
+    }
+
+    .about-admin .form-control:focus {
+        border-color: #6d5dfc;
+        box-shadow: 0 0 0 .2rem rgba(109, 93, 252, .15);
+    }
+
+    .about-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .about-admin .btn-primary-soft {
+        background: #6d5dfc;
+        border: 0;
+        color: #fff;
+        border-radius: .75rem;
+        padding: .7rem 1.6rem;
+        font-weight: 600;
+    }
+
+        .about-admin .btn-primary-soft:hover {
+            background: #5847e6;
+            color: #fff;
+        }
+
+    .about-admin .btn-ghost {
+        border: 1px solid #e3e0f7;
+        border-radius: .75rem;
+        padding: .7rem 1.4rem;
+        color: #475069;
+        background: #fff;
+    }
+
+    .about-admin .status-box {
+        background: #f4f2ff;
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .about-admin .preview-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: .7rem 0;
+        border-bottom: 1px dashed #e9e7f5;
+        font-size: .9rem;
+    }
+
+        .about-admin .preview-row:last-of-type {
+            border-bottom: 0;
+        }
+
+        .about-admin .preview-row .lbl {
+            color: #8a90a6;
+        }
+
+        .about-admin .preview-row .val {
+            font-weight: 600;
+            color: #1e1b4b;
+            text-align: right;
+            word-break: break-word;
+        }
+
+    .about-admin .sticky-preview {
+        position: sticky;
+        top: 1.5rem;
+    }
+
+    .about-admin .char-count {
+        font-size: .75rem;
+        color: #8a90a6;
+    }
+</style>
+
+<div class="container-fluid about-admin py-4">
+
+    <!-- Başlık -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-box"><i class="bi bi-person-badge"></i></div>
+            <div>
+                <h4 class="mb-0 fw-bold">Hakkımda Bölümü</h4>
+                <span class="text-secondary small">Ana sayfadaki "Hakkımda" alanında görünen bilgileri buradan düzenleyin.</span>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mb-0 py-2 px-3 rounded-3 small">
+                <i class="bi bi-check-circle-fill me-1"></i> @TempData["Success"]
+            </div>
+        }
+    </div>
+
+    <form asp-area="Admin" asp-controller="About" asp-action="UpdateAbout" method="post">
+        <input type="hidden" asp-for="AboutId" />
+
+        <div class="row g-4">
+
+            <!-- Sol: Form -->
+            <div class="col-xl-8">
+
+                <!-- Kişisel Bilgiler -->
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-person-lines-fill me-2 text-primary"></i>Kişisel Bilgiler</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="NameSurname" class="form-label">Ad Soyad</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input asp-for="NameSurname" class="form-control" placeholder="Örn: Poyraz Alsever" />
+                                </div>
+                                <span asp-validation-for="NameSurname" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="JobTitle" class="form-label">Meslek</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                                    <input asp-for="JobTitle" class="form-control" placeholder="Örn: Bilgisayar Mühendisi" />
+                                </div>
+                                <span asp-validation-for="JobTitle" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Location" class="form-label">Konum</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                    <input asp-for="Location" class="form-control" placeholder="Örn: İstanbul, Türkiye" />
+                                </div>
+                                <span asp-validation-for="Location" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Expert" class="form-label">Uzmanlık</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-layers"></i></span>
+                                    <input asp-for="Expert" class="form-control" placeholder="Örn: Full Stack Web Development" />
+                                </div>
+                                <span asp-validation-for="Expert" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Email" class="form-label">E-posta</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="ornek@mail.com" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Biyografi -->
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-card-text me-2 text-primary"></i>Biyografi</h6>
+                    </div>
+                    <div class="card-body">
+                        <label asp-for="Description" class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" id="descInput" rows="8" class="form-control"
+                                  placeholder="Kendinizi kısaca tanıtın..."></textarea>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                            <span class="char-count ms-auto"><span id="charCount">0</span> karakter</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Durum -->
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-toggles me-2 text-primary"></i>Durum</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-box d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="fw-semibold">Yeni projelere ve iş birliklerine açık</div>
+                                <div class="text-secondary small">Açık olduğunda sitede yeşil onay rozeti gösterilir.</div>
+                            </div>
+                            <div class="form-check form-switch fs-4 mb-0">
+                                <input type="checkbox" asp-for="OpenToWork" id="openToggle" class="form-check-input" role="switch"
+                                       checked="@(string.Equals(Model?.OpenToWork, "true", StringComparison.OrdinalIgnoreCase))" />
+                                <input type="hidden" asp-for="OpenToWork" id="openValue" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Butonlar -->
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-area="Admin" asp-controller="About" asp-action="Index" class="btn btn-ghost" title="Listeye dön">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Vazgeç
+                    </a>
+                    <button type="submit" class="btn btn-primary-soft">
+                        <i class="bi bi-check2-circle me-1"></i> Değişiklikleri Kaydet
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sağ: Canlı Önizleme -->
+            <div class="col-xl-4">
+                <div class="sticky-preview">
+                    <div class="card card-soft">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h6 class="mb-0 fw-bold"><i class="bi bi-eye me-2 text-primary"></i>Canlı Önizleme</h6>
+                            <span class="badge rounded-pill text-bg-light">Sitedeki görünüm</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="icon-box"><i class="bi bi-person-badge"></i></div>
+                                <div>
+                                    <div class="fw-bold" id="pvName">—</div>
+                                    <div class="text-secondary small" id="pvJob">—</div>
+                                </div>
+                            </div>
+
+                            <div class="preview-row"><span class="lbl"><i class="bi bi-geo-alt me-1"></i>Konum</span><span class="val" id="pvLocation">—</span></div>
+                            <div class="preview-row"><span class="lbl"><i class="bi bi-layers me-1"></i>Uzmanlık</span><span class="val" id="pvExpert">—</span></div>
+                            <div class="preview-row"><span class="lbl"><i class="bi bi-envelope me-1"></i>E-posta</span><span class="val" id="pvEmail">—</span></div>
+
+                            <div class="status-box mt-3 small fw-semibold" id="pvStatus"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    (function () {
+        const bind = (inputName, targetId) => {
+            const input = document.querySelector('[name="' + inputName + '"]');
+            const target = document.getElementById(targetId);
+            if (!input || !target) return;
+            const update = () => target.textContent = input.value.trim() || '—';
+            input.addEventListener('input', update);
+            update();
+        };
+
+        bind('NameSurname', 'pvName');
+        bind('JobTitle', 'pvJob');
+        bind('Location', 'pvLocation');
+        bind('Expert', 'pvExpert');
+        bind('Email', 'pvEmail');
+
+        // Karakter sayacı
+        const desc = document.getElementById('descInput');
+        const count = document.getElementById('charCount');
+        const updateCount = () => count.textContent = desc.value.length;
+        desc.addEventListener('input', updateCount);
+        updateCount();
+
+        const toggle = document.getElementById('openToggle');
+        const hidden = document.getElementById('openValue');
+        const status = document.getElementById('pvStatus');
+
+        const updateStatus = () => {
+            hidden.value = toggle.checked ? 'true' : 'false';
+            status.innerHTML = toggle.checked
+                ? '<i class="bi bi-check-circle-fill text-success me-2"></i>Yeni projelere ve iş birliklerine açık'
+                : '<i class="bi bi-dash-circle text-secondary me-2"></i>Şu an yeni iş birliği almıyor';
+        };
+        toggle.addEventListener('change', updateStatus);
+        updateStatus();
+    })();
+</script>

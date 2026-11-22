@@ -1,0 +1,688 @@
+﻿@model MYAcademy_Portfolio.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    int passiveCount = Model.ProjectCount - Model.ActiveProjectCount;
+    int maxCategory = Model.ProjectsByCategory.Any() ? Math.Max(1, Model.ProjectsByCategory.Max(x => x.Value)) : 1;
+
+    var checks = new List<(string Text, bool Done, string Link)>
+    {
+        ("Hakkımda bilgileri girildi", Model.HasAbout, "/Admin/About/Index"),
+        ("CV dosyası yüklendi", Model.HasCv, "/Admin/Cv/Index"),
+        ("En az bir aktif proje var", Model.ActiveProjectCount > 0, "/Admin/Project/Index"),
+        ("Tüm projelerin GitHub linki var", Model.ProjectCount > 0 && Model.ProjectsWithoutGithub == 0, "/Admin/Projects/Index"),
+        ("Boş kategori yok", Model.ProjectsByCategory.Any() && Model.EmptyCategoryCount == 0, "/Admin/Categories/Index"),
+        ("Okunmamış mesaj yok", Model.UnreadCount == 0, "/Admin/Message/MessageList")
+    };
+    int completion = (int)Math.Round(checks.Count(c => c.Done) * 100.0 / checks.Count);
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .edu-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+        background: #fff;
+        padding: 1.5rem;
+    }
+
+    .edu-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+        .edu-admin .icon-box.green {
+            background: #e8f8ef;
+            color: #1f9d55;
+        }
+
+        .edu-admin .icon-box.amber {
+            background: #fff7e6;
+            color: #d97706;
+        }
+
+        .edu-admin .icon-box.sky {
+            background: #eaf6fd;
+            color: #0284c7;
+        }
+
+        .edu-admin .icon-box.pink {
+            background: #fdf0f7;
+            color: #db2777;
+        }
+
+        .edu-admin .icon-box.red {
+            background: #fdecec;
+            color: #dc3545;
+        }
+
+    .edu-admin .card-title-soft {
+        color: #475069;
+        font-size: .8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .edu-admin .card-title-soft a {
+            color: #6d5dfc;
+            text-decoration: none;
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: .85rem;
+            white-space: nowrap;
+        }
+
+    /* İstatistik kartları */
+    .edu-admin .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 1rem;
+    }
+
+    .edu-admin .stat-card {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        padding: 1.15rem 1.25rem;
+        text-decoration: none;
+        transition: transform .15s;
+    }
+
+    .edu-admin a.stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .edu-admin .stat-label {
+        color: #6b7280;
+        font-size: .8rem;
+        margin: 0;
+    }
+
+    .edu-admin .stat-value {
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: #1e1b4b;
+        line-height: 1.1;
+        margin: .1rem 0 0;
+    }
+
+    .edu-admin .stat-sub {
+        color: #9ca3af;
+        font-size: .75rem;
+    }
+
+    /* Listeler */
+    .edu-admin .list-row {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        padding: .8rem .6rem;
+        margin: 0 -.6rem;
+        border-radius: .9rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+        .edu-admin .list-row + .list-row {
+            border-top: 1px solid #f0eef9;
+        }
+
+    .edu-admin a.list-row:hover {
+        background: #f8f7ff;
+    }
+
+    .edu-admin .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: .85rem;
+        flex-shrink: 0;
+    }
+
+    .edu-admin .row-main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .edu-admin .row-title {
+        color: #1f2937;
+        font-size: .93rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .edu-admin .row-sub {
+        color: #6b7280;
+        font-size: .83rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .edu-admin .list-row.unread .row-title {
+        font-weight: 700;
+        color: #1e1b4b;
+    }
+
+    .edu-admin .row-end {
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .edu-admin .badge-soft {
+        display: inline-block;
+        font-weight: 600;
+        border-radius: 2rem;
+        padding: .3rem .7rem;
+        font-size: .74rem;
+        white-space: nowrap;
+    }
+
+        .edu-admin .badge-soft.new {
+            background: #f4f2ff;
+            color: #6d5dfc;
+        }
+
+        .edu-admin .badge-soft.read, .edu-admin .badge-soft.passive {
+            background: #f1f2f6;
+            color: #6b7280;
+        }
+
+        .edu-admin .badge-soft.active {
+            background: #e8f8ef;
+            color: #1f9d55;
+        }
+
+        .edu-admin .badge-soft.cat {
+            background: #eaf6fd;
+            color: #0284c7;
+        }
+
+    .edu-admin .project-thumb {
+        width: 52px;
+        height: 38px;
+        border-radius: .6rem;
+        object-fit: cover;
+        background: #f4f2ff;
+        flex-shrink: 0;
+    }
+
+        .edu-admin .project-thumb.empty {
+            display: grid;
+            place-items: center;
+            color: #b3abf5;
+        }
+
+    .edu-admin .edit-hint {
+        color: #6d5dfc;
+        font-size: .95rem;
+    }
+
+    /* Kategori özeti */
+    .edu-admin .chart-box {
+        position: relative;
+        height: 200px;
+    }
+
+    .edu-admin .cat-row {
+        margin-top: .85rem;
+    }
+
+    .edu-admin .cat-top {
+        display: flex;
+        justify-content: space-between;
+        font-size: .88rem;
+        margin-bottom: .3rem;
+    }
+
+        .edu-admin .cat-top span:last-child {
+            color: #6b7280;
+        }
+
+    .edu-admin .cat-bar {
+        height: 8px;
+        background: #f4f2ff;
+        border-radius: 99px;
+        overflow: hidden;
+    }
+
+        .edu-admin .cat-bar div {
+            height: 100%;
+            border-radius: 99px;
+        }
+
+    .edu-admin .view-toggle {
+        display: inline-flex;
+        background: #f4f2ff;
+        border-radius: .7rem;
+        padding: 3px;
+    }
+
+        .edu-admin .view-toggle button {
+            border: 0;
+            background: transparent;
+            color: #6b7280;
+            font-size: .78rem;
+            font-weight: 600;
+            padding: .3rem .7rem;
+            border-radius: .55rem;
+        }
+
+            .edu-admin .view-toggle button.on {
+                background: #fff;
+                color: #6d5dfc;
+                box-shadow: 0 1px 3px rgba(0,0,0,.06);
+            }
+
+    /* Hızlı işlemler */
+    .edu-admin .quick-action {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        padding: .9rem 1rem;
+        border-radius: 1rem;
+        background: #f8f7ff;
+        text-decoration: none;
+        color: #1f2937;
+        transition: background .15s;
+    }
+
+        .edu-admin .quick-action + .quick-action {
+            margin-top: .6rem;
+        }
+
+        .edu-admin .quick-action:hover {
+            background: #efecff;
+        }
+
+        .edu-admin .quick-action .qa-title {
+            font-weight: 600;
+            font-size: .93rem;
+        }
+
+        .edu-admin .quick-action .qa-sub {
+            color: #6b7280;
+            font-size: .8rem;
+        }
+
+        .edu-admin .quick-action .bi-chevron-right {
+            margin-left: auto;
+            color: #b3abf5;
+        }
+
+    /* Tamamlanma */
+    .edu-admin .check-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .edu-admin .check-list li {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            padding: .55rem 0;
+            border-bottom: 1px solid #f0eef9;
+            font-size: .9rem;
+        }
+
+            .edu-admin .check-list li:last-child {
+                border-bottom: 0;
+            }
+
+        .edu-admin .check-list .ok {
+            color: #1f9d55;
+        }
+
+        .edu-admin .check-list .todo {
+            color: #d1d5db;
+        }
+
+        .edu-admin .check-list a {
+            margin-left: auto;
+            color: #6d5dfc;
+            font-size: .8rem;
+            text-decoration: none;
+        }
+
+    .edu-admin .progress-soft {
+        height: 10px;
+        background: #f4f2ff;
+        border-radius: 99px;
+        overflow: hidden;
+    }
+
+        .edu-admin .progress-soft div {
+            height: 100%;
+            background: #6d5dfc;
+            border-radius: 99px;
+        }
+
+    .edu-admin .empty-note {
+        color: #9ca3af;
+        font-size: .9rem;
+        text-align: center;
+        padding: 1.75rem 0;
+    }
+</style>
+
+<div class="container-fluid edu-admin py-4">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="icon-box"><i class="bi bi-grid-1x2"></i></div>
+        <div>
+            <h4 class="mb-0 fw-bold">Dashboard</h4>
+            <span class="text-secondary small">Portfolyo sitenin genel durumu.</span>
+        </div>
+    </div>
+
+    <!-- İSTATİSTİK KARTLARI -->
+    <div class="stat-grid mb-4">
+        <a href="/Admin/Project/Index" class="card-soft stat-card">
+            <div class="icon-box"><i class="bi bi-kanban"></i></div>
+            <div>
+                <p class="stat-label">Toplam Proje</p>
+                <p class="stat-value">@Model.ProjectCount</p>
+                <div class="stat-sub">@Model.ProjectsByCategory.Count kategoride</div>
+            </div>
+        </a>
+        <a href="/Admin/Project/Index" class="card-soft stat-card">
+            <div class="icon-box green"><i class="bi bi-check2-circle"></i></div>
+            <div>
+                <p class="stat-label">Aktif Proje</p>
+                <p class="stat-value">@Model.ActiveProjectCount</p>
+                <div class="stat-sub">@passiveCount pasif</div>
+            </div>
+        </a>
+        <a href="/Admin/Skill/Index" class="card-soft stat-card">
+            <div class="icon-box sky"><i class="bi bi-lightning-charge"></i></div>
+            <div>
+                <p class="stat-label">Yetenek</p>
+                <p class="stat-value">@Model.SkillCount</p>
+                <div class="stat-sub">Yeteneklerim bölümü</div>
+            </div>
+        </a>
+        <a href="/Admin/Experience/ExperienceList" class="card-soft stat-card">
+            <div class="icon-box pink"><i class="bi bi-briefcase"></i></div>
+            <div>
+                <p class="stat-label">Deneyim</p>
+                <p class="stat-value">@Model.ExperienceCount</p>
+                <div class="stat-sub">İş geçmişi</div>
+            </div>
+        </a>
+        <a href="/Admin/Education/EducationList" class="card-soft stat-card">
+            <div class="icon-box amber"><i class="bi bi-mortarboard"></i></div>
+            <div>
+                <p class="stat-label">Eğitim</p>
+                <p class="stat-value">@Model.EducationCount</p>
+                <div class="stat-sub">Eğitim hayatı</div>
+            </div>
+        </a>
+        <a href="/Admin/Message/MessageList" class="card-soft stat-card">
+            <div class="icon-box"><i class="bi bi-envelope"></i></div>
+            <div>
+                <p class="stat-label">Toplam Mesaj</p>
+                <p class="stat-value">@Model.MessageCount</p>
+                <div class="stat-sub">Bu ay @Model.MessagesThisMonth yeni</div>
+            </div>
+        </a>
+        <a href="/Admin/Message/MessageList" class="card-soft stat-card">
+            <div class="icon-box red"><i class="bi bi-envelope-exclamation"></i></div>
+            <div>
+                <p class="stat-label">Okunmamış Mesaj</p>
+                <p class="stat-value">@Model.UnreadCount</p>
+                <div class="stat-sub">@(Model.UnreadCount == 0 ? "Hepsi okundu" : "Yanıt bekliyor")</div>
+            </div>
+        </a>
+    </div>
+
+    <!-- SON MESAJLAR + KATEGORİ ÖZETİ -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card-soft h-100">
+                <div class="card-title-soft">Son 5 Mesaj <a href="/Admin/Message/MessageList">Tümünü gör →</a></div>
+                @if (!Model.LastMessages.Any())
+                {
+                    <div class="empty-note">Henüz mesaj yok.</div>
+                }
+                @foreach (var m in Model.LastMessages)
+                {
+                    var initials = string.Concat((m.NameSurname ?? "?")
+                        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                        .Take(2).Select(w => char.ToUpper(w[0])));
+                    <a href="/Admin/Message/MessageDetail/@m.MessageId" class="list-row @(m.IsRead ? "" : "unread")">
+                        <div class="avatar">@initials</div>
+                        <div class="row-main">
+                            <div class="row-title">@m.NameSurname</div>
+                            <div class="row-sub">@m.Subject</div>
+                        </div>
+                        <div class="row-end">
+                            <span class="badge-soft @(m.IsRead ? "read" : "new")">@(m.IsRead ? "Okundu" : "Yeni")</span>
+                            <div class="stat-sub mt-1">@m.SendDate.ToString("dd.MM.yyyy HH:mm")</div>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card-soft h-100">
+                <div class="card-title-soft">
+                    Kategori Özeti
+                    @if (Model.ProjectCount > 0)
+                    {
+                        <div class="view-toggle">
+                            <button type="button" class="on" data-view="list">Liste</button>
+                            <button type="button" data-view="chart">Grafik</button>
+                        </div>
+                    }
+                </div>
+
+                @if (!Model.ProjectsByCategory.Any())
+                {
+                    <div class="empty-note">Henüz kategori yok.</div>
+                }
+                else
+                {
+                    var colors = new[] { "#6d5dfc", "#38bdf8", "#22c55e", "#f59e0b", "#f472b6", "#a78bfa", "#94a3b8" };
+                    <div id="catList">
+                        @for (int i = 0; i < Model.ProjectsByCategory.Count; i++)
+                        {
+                            var c = Model.ProjectsByCategory[i];
+                            <div class="cat-row">
+                                <div class="cat-top"><span>@c.Label</span><span>@c.Value proje</span></div>
+                                <div class="cat-bar">
+                                    <div style="width:@(c.Value * 100 / maxCategory)%; background:@colors[i % colors.Length]"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div id="catChartWrap" class="d-none">
+                        <div class="chart-box"><canvas id="categoryChart"></canvas></div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- SON PROJELER + HIZLI İŞLEMLER -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card-soft h-100">
+                <div class="card-title-soft">Son 3 Proje <a href="/Admin/Project/Index">Tümünü gör →</a></div>
+                @if (!Model.LastProjects.Any())
+                {
+                    <div class="empty-note">Henüz proje yok.</div>
+                }
+                @foreach (var p in Model.LastProjects)
+                {
+                    <a href="/Admin/Projects/UpdateProject/@p.ProjectId" class="list-row" title="Düzenle">
+                        @if (!string.IsNullOrWhiteSpace(p.CoverImageUrl))
+                        {
+                            <img src="@p.CoverImageUrl" alt="" class="project-thumb" />
+                        }
+                        else
+                        {
+                            <div class="project-thumb empty"><i class="bi bi-image"></i></div>
+                        }
+                        <div class="row-main">
+                            <div class="row-title fw-semibold">@p.ProjectName</div>
+                            <div class="mt-1"><span class="badge-soft cat">@(p.Category?.CategoryName ?? "Kategorisiz")</span></div>
+                        </div>
+                        <div class="row-end d-flex align-items-center gap-3">
+                            <span class="badge-soft @(p.IsActive ? "active" : "passive")">@(p.IsActive ? "Aktif" : "Pasif")</span>
+                            <i class="bi bi-pencil-square edit-hint"></i>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card-soft h-100">
+                <div class="card-title-soft">Hızlı İşlemler</div>
+                <a href="/Admin/Project/CreateProject" class="quick-action">
+                    <div class="icon-box"><i class="bi bi-plus-lg"></i></div>
+                    <div>
+                        <div class="qa-title">Yeni Proje Ekle</div>
+                        <div class="qa-sub">Portfolyona yeni bir çalışma ekle</div>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <a href="/Admin/Message/MessageList" class="quick-action">
+                    <div class="icon-box amber"><i class="bi bi-envelope"></i></div>
+                    <div>
+                        <div class="qa-title">Mesajları Görüntüle</div>
+                        <div class="qa-sub">@(Model.UnreadCount > 0 ? Model.UnreadCount + " okunmamış mesaj var" : "Tüm mesajlar okundu")</div>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <a href="/Default/Index" target="_blank" rel="noopener" class="quick-action">
+                    <div class="icon-box green"><i class="bi bi-box-arrow-up-right"></i></div>
+                    <div>
+                        <div class="qa-title">Portfolyoyu Aç</div>
+                        <div class="qa-sub">Siteyi ziyaretçi gözüyle yeni sekmede gör</div>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- AYLIK MESAJ + TAMAMLANMA -->
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card-soft h-100">
+                <div class="card-title-soft">Son 6 Ay Gelen Mesajlar</div>
+                <div class="chart-box" style="height:230px"><canvas id="monthlyChart"></canvas></div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card-soft h-100">
+                <div class="card-title-soft">Site Tamamlanma <span>%@completion</span></div>
+                <div class="progress-soft mb-3"><div style="width:@(completion)%"></div></div>
+                <ul class="check-list">
+                    @foreach (var c in checks)
+                    {
+                        <li>
+                            <i class="bi @(c.Done ? "bi-check-circle-fill ok" : "bi-circle todo")"></i>
+                            <span class="@(c.Done ? "" : "text-secondary")">@c.Text</span>
+                            @if (!c.Done)
+                            {
+                                <a href="@c.Link">Düzenle →</a>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var palette = ['#6d5dfc', '#38bdf8', '#22c55e', '#f59e0b', '#f472b6', '#a78bfa', '#94a3b8'];
+        Chart.defaults.font.family = 'inherit';
+        Chart.defaults.color = '#6b7280';
+
+        var categoryData = @Html.Raw(Json.Serialize(Model.ProjectsByCategory));
+        var monthlyData = @Html.Raw(Json.Serialize(Model.MonthlyMessages));
+
+        // Kategori özeti: Liste / Grafik geçişi (grafik ilk açılışta çizilir)
+        var categoryChart = null;
+        document.querySelectorAll('.view-toggle button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.view-toggle button').forEach(function (b) { b.classList.remove('on'); });
+                btn.classList.add('on');
+
+                var showChart = btn.dataset.view === 'chart';
+                document.getElementById('catList').classList.toggle('d-none', showChart);
+                document.getElementById('catChartWrap').classList.toggle('d-none', !showChart);
+
+                if (showChart && !categoryChart) {
+                    categoryChart = new Chart(document.getElementById('categoryChart'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: categoryData.map(function (x) { return x.label; }),
+                            datasets: [{
+                                data: categoryData.map(function (x) { return x.value; }),
+                                backgroundColor: palette,
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            cutout: '62%',
+                            plugins: { legend: { position: 'right', labels: { usePointStyle: true, pointStyle: 'circle' } } }
+                        }
+                    });
+                }
+            });
+        });
+
+        // Son 6 ay mesaj grafiği
+        new Chart(document.getElementById('monthlyChart'), {
+            type: 'bar',
+            data: {
+                labels: monthlyData.map(function (x) { return x.label; }),
+                datasets: [{
+                    label: 'Mesaj',
+                    data: monthlyData.map(function (x) { return x.value; }),
+                    backgroundColor: '#6d5dfc',
+                    borderRadius: 8,
+                    maxBarThickness: 32
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#f0eef9' } }
+                }
+            }
+        });
+    });
+</script>

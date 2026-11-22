@@ -1,0 +1,242 @@
+﻿@model List<MYAcademy_Portfolio.Entities.Skill>
+
+@{
+    ViewData["Title"] = "Yetenekler";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    var categories = Model
+        .Select(s => s.SkillCategoryTitle)
+        .Distinct()
+        .OrderBy(c => c)
+        .ToList();
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .skill-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+    .skill-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .skill-admin .cat-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 1.05rem;
+        flex-shrink: 0;
+        background: #f4f2ff;
+        color: #6d5dfc;
+    }
+
+    .skill-admin thead th {
+        background: #f8f7ff;
+        color: #475069;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        border-bottom: 1px solid #e9e7f5;
+        padding: 1rem 1.25rem;
+        white-space: nowrap;
+    }
+
+    .skill-admin tbody td {
+        padding: .9rem 1.25rem;
+        vertical-align: middle;
+        border-color: #f0eef9;
+    }
+
+    .skill-admin .mini-progress {
+        height: 8px;
+        border-radius: 1rem;
+        background: #eceaf9;
+        overflow: hidden;
+        min-width: 120px;
+    }
+
+        .skill-admin .mini-progress .progress-bar {
+            border-radius: 1rem;
+            background: linear-gradient(90deg, #8b7dff, #6d5dfc);
+        }
+
+    .skill-admin .level-text {
+        font-weight: 700;
+        color: #1e1b4b;
+        min-width: 44px;
+        text-align: right;
+    }
+
+    .skill-admin .filter-btn {
+        border: 1px solid #e3e0f7;
+        background: #fff;
+        color: #475069;
+        border-radius: 2rem;
+        padding: .35rem .9rem;
+        font-size: .82rem;
+        cursor: pointer;
+    }
+
+        .skill-admin .filter-btn.active {
+            background: #6d5dfc;
+            border-color: #6d5dfc;
+            color: #fff;
+        }
+
+    .skill-admin .btn-act {
+        border-radius: .6rem;
+        width: 38px;
+        height: 38px;
+        display: inline-grid;
+        place-items: center;
+        border: 0;
+    }
+
+    .skill-admin .btn-edit {
+        background: #e8f8ef;
+        color: #1f9d55;
+    }
+
+        .skill-admin .btn-edit:hover {
+            background: #1f9d55;
+            color: #fff;
+        }
+
+    .skill-admin .btn-del {
+        background: #fdecec;
+        color: #dc3545;
+    }
+
+        .skill-admin .btn-del:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+
+    .skill-admin .desc-cell {
+        max-width: 260px;
+        color: #6b7280;
+        font-size: .85rem;
+    }
+</style>
+
+<div class="container-fluid skill-admin py-4">
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-box"><i class="bi bi-bar-chart-steps"></i></div>
+            <div>
+                <h4 class="mb-0 fw-bold">Yetenekler</h4>
+                <span class="text-secondary small">Sitedeki "Yeteneklerim" bölümünde görünen kayıtlar.</span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <span class="badge rounded-pill text-bg-light px-3 py-2">@Model.Count yetenek</span>
+            <span class="badge rounded-pill text-bg-light px-3 py-2">@categories.Count kategori</span>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-3 small py-2">
+            <i class="bi bi-check-circle-fill me-1"></i> @TempData["Success"]
+        </div>
+    }
+
+    <!-- Kategori filtresi -->
+    <div class="d-flex flex-wrap gap-2 mb-3" id="filters">
+        <button type="button" class="filter-btn active" data-cat="">Tümü</button>
+        @foreach (var c in categories)
+        {
+            <button type="button" class="filter-btn" data-cat="@c">@c</button>
+        }
+    </div>
+
+    <div class="card card-soft overflow-hidden">
+        <div class="table-responsive">
+            <table class="table mb-0" id="skillTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Yetenek</th>
+                        <th style="min-width: 220px;">Seviye</th>
+                        <th>Kategori</th>
+                        <th>Kategori Açıklaması</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderBy(s => s.SkillCategoryTitle).ThenByDescending(s => s.Level))
+                    {
+                        <tr data-cat="@item.SkillCategoryTitle">
+                            <td class="text-secondary">@item.SkillId</td>
+                            <td class="fw-semibold">@item.Name</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="mini-progress flex-grow-1">
+                                        <div class="progress-bar" style="width: @(item.Level)%"></div>
+                                    </div>
+                                    <span class="level-text">%@item.Level</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="cat-icon @item.SkillCategoryColor"><i class="bi @item.SkillCategoryIcon"></i></div>
+                                    <span class="small fw-semibold">@item.SkillCategoryTitle</span>
+                                </div>
+                            </td>
+                            <td class="desc-cell">
+                                @(item.SkillCategoryDescription?.Length > 60
+                                    ? item.SkillCategoryDescription.Substring(0, 60) + "…"
+                                    : item.SkillCategoryDescription)
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a asp-area="Admin" asp-controller="Skill" asp-action="UpdateSkill"
+                                   asp-route-id="@item.SkillId" class="btn-act btn-edit me-1" title="Güncelle">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a asp-area="Admin" asp-controller="Skill" asp-action="DeleteSkill"
+                                   asp-route-id="@item.SkillId" class="btn-act btn-del" title="Sil"
+                                   onclick="return confirm('Bu yeteneği silmek istediğinize emin misiniz?');">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="6" class="text-center text-secondary py-5">Henüz yetenek kaydı yok.</td></tr>
+                    }
+                </tbody>
+            </table>
+            <a href="/Admin/Skill/CreateSkill/" class="btn btn-primary mt-3">Güncelle</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const buttons = document.querySelectorAll('#filters .filter-btn');
+        const rows = document.querySelectorAll('#skillTable tbody tr[data-cat]');
+
+        buttons.forEach(btn => btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const cat = btn.dataset.cat;
+            rows.forEach(r => r.style.display = (!cat || r.dataset.cat === cat) ? '' : 'none');
+        }));
+    })();
+</script>

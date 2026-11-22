@@ -1,0 +1,407 @@
+﻿@model MYAcademy_Portfolio.Entities.HeroSection
+
+@{
+    ViewData["Title"] = "Hero Bölümü";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .hero-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+        .hero-admin .card-soft .card-header {
+            background: transparent;
+            border-bottom: 1px solid #eef0f6;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .hero-admin .card-soft .card-body {
+            padding: 1.5rem;
+        }
+
+    .hero-admin .form-label {
+        font-weight: 600;
+        font-size: .85rem;
+        color: #475069;
+        margin-bottom: .4rem;
+    }
+
+    .hero-admin .input-group-text {
+        background: #f4f2ff;
+        border: 1px solid #e3e0f7;
+        color: #6d5dfc;
+        border-right: 0;
+        border-radius: .75rem 0 0 .75rem;
+    }
+
+    .hero-admin .form-control {
+        border: 1px solid #e3e0f7;
+        border-radius: .75rem;
+        padding: .65rem .9rem;
+    }
+
+    .hero-admin .input-group .form-control {
+        border-left: 0;
+        border-radius: 0 .75rem .75rem 0;
+    }
+
+    .hero-admin .form-control:focus {
+        border-color: #6d5dfc;
+        box-shadow: 0 0 0 .2rem rgba(109, 93, 252, .15);
+    }
+
+    .hero-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .hero-admin .btn-primary-soft {
+        background: #6d5dfc;
+        border: 0;
+        color: #fff;
+        border-radius: .75rem;
+        padding: .7rem 1.6rem;
+        font-weight: 600;
+    }
+
+        .hero-admin .btn-primary-soft:hover {
+            background: #5847e6;
+            color: #fff;
+        }
+
+    .hero-admin .btn-outline-soft {
+        border: 1px solid #6d5dfc;
+        color: #6d5dfc;
+        background: #fff;
+        border-radius: .75rem;
+        padding: .6rem 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .hero-admin .btn-outline-soft:hover {
+            background: #f4f2ff;
+        }
+
+    .hero-admin .btn-ghost {
+        border: 1px solid #e3e0f7;
+        border-radius: .75rem;
+        padding: .6rem 1.1rem;
+        color: #475069;
+        background: #fff;
+    }
+
+    /* Resim alanı */
+    .hero-admin .img-drop {
+        border: 2px dashed #d9d4f7;
+        border-radius: 1rem;
+        background: #faf9ff;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .hero-admin .img-frame {
+        width: 100%;
+        max-width: 260px;
+        aspect-ratio: 4 / 5;
+        margin: 0 auto 1rem;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        background: #ece8ff;
+        display: grid;
+        place-items: center;
+        color: #8b7dff;
+        font-size: 2.5rem;
+        box-shadow: 0 8px 24px rgba(109, 93, 252, .15);
+    }
+
+        .hero-admin .img-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    .hero-admin .file-info {
+        font-size: .8rem;
+        color: #6b7280;
+        margin-top: .6rem;
+        min-height: 1.2em;
+    }
+
+    .hero-admin .file-error {
+        font-size: .8rem;
+        color: #dc3545;
+        margin-top: .4rem;
+        display: none;
+    }
+
+    /* Önizleme */
+    .hero-admin .sticky-preview {
+        position: sticky;
+        top: 1.5rem;
+    }
+
+    .hero-admin .pv-badge {
+        display: inline-block;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        border-radius: 2rem;
+        padding: .35rem .9rem;
+        font-size: .82rem;
+        font-weight: 600;
+        margin-bottom: .8rem;
+    }
+
+    .hero-admin .pv-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #1e1b4b;
+        line-height: 1.2;
+    }
+
+    .hero-admin .pv-name {
+        background: linear-gradient(90deg, #8b7dff, #6d5dfc);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .hero-admin .pv-photo {
+        width: 120px;
+        height: 150px;
+        border-radius: 1rem;
+        overflow: hidden;
+        background: #ece8ff;
+        display: grid;
+        place-items: center;
+        color: #8b7dff;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+    }
+
+        .hero-admin .pv-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+</style>
+
+<div class="container-fluid hero-admin py-4">
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-box"><i class="bi bi-window-stack"></i></div>
+            <div>
+                <h4 class="mb-0 fw-bold">Hero Bölümü</h4>
+                <span class="text-secondary small">Sitenin açılışında görünen karşılama alanını düzenleyin.</span>
+            </div>
+        </div>
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mb-0 py-2 px-3 rounded-3 small">
+                <i class="bi bi-check-circle-fill me-1"></i> @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger mb-0 py-2 px-3 rounded-3 small">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i> @TempData["Error"]
+            </div>
+        }
+    </div>
+
+    <form asp-area="Admin" asp-controller="Hero" asp-action="Index" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="HeroSectionId" />
+        <input type="hidden" asp-for="ImageUrl" id="currentImage" />
+        <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div>
+        <div class="row g-4">
+
+            <!-- Sol: Form -->
+            <div class="col-xl-7">
+
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-type me-2 text-primary"></i>Metinler</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Rozet Yazısı</label>
+                            <div class="input-group">
+                                <span class="input-group-text">👋</span>
+                                <input asp-for="Title" class="form-control" placeholder="Örn: Bilgisayar Mühendisi & Yazılım Geliştirici" />
+                            </div>
+                            <div class="form-text">Başlığın üstündeki küçük rozette görünür.</div>
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SubTitle" class="form-label">Ad Soyad</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input asp-for="SubTitle" class="form-control" placeholder="Örn: Mert Arğın" />
+                            </div>
+                            <div class="form-text">"Merhaba, Ben ..." cümlesinde renkli görünen kısımdır.</div>
+                            <span asp-validation-for="SubTitle" class="text-danger small"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Description" class="form-label">Açıklama</label>
+                            <textarea asp-for="Description" rows="5" class="form-control" placeholder="Kendinizi birkaç cümleyle tanıtın..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-image me-2 text-primary"></i>Profil Resmi</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="img-drop">
+                            <div class="img-frame" id="imgFrame">
+                                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                                {
+                                    <img src="@Model.ImageUrl" alt="Profil resmi" id="imgPreview" />
+                                }
+                                else
+                                {
+                                    <i class="bi bi-person-bounding-box" id="imgPlaceholder"></i>
+                                }
+                            </div>
+
+                            <input type="file" name="imageFile" id="imageFile" accept="image/png,image/jpeg,image/webp" hidden />
+                            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                <label for="imageFile" class="btn-outline-soft mb-0">
+                                    <i class="bi bi-upload me-1"></i> Resim Seç
+                                </label>
+                                <button type="button" class="btn btn-ghost" id="btnCancelFile" style="display:none">
+                                    <i class="bi bi-x-lg me-1"></i> Seçimi İptal Et
+                                </button>
+                            </div>
+                            <div class="file-info" id="fileInfo">JPG, PNG veya WEBP · en fazla 3 MB</div>
+                            <div class="file-error" id="fileError"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary-soft">
+                        <i class="bi bi-check2-circle me-1"></i> Değişiklikleri Kaydet
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sağ: Önizleme -->
+            <div class="col-xl-5">
+                <div class="sticky-preview">
+                    <div class="card card-soft">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h6 class="mb-0 fw-bold"><i class="bi bi-eye me-2 text-primary"></i>Canlı Önizleme</h6>
+                            <span class="badge rounded-pill text-bg-light">Sitedeki görünüm</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex gap-3 align-items-start">
+                                <div class="flex-grow-1">
+                                    <span class="pv-badge">👋 <span id="pvTitle">—</span></span>
+                                    <div class="pv-title">Merhaba, Ben <span class="pv-name" id="pvSub">—</span>.</div>
+                                    <p class="text-secondary small mt-2 mb-0" id="pvDesc">—</p>
+                                </div>
+                                <div class="pv-photo" id="pvPhoto">
+                                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                                    {
+                                        <img src="@Model.ImageUrl" alt="" />
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-person"></i>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    (function () {
+        const MAX_MB = 3;
+        const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+
+        const fileInput = document.getElementById('imageFile');
+        const frame = document.getElementById('imgFrame');
+        const info = document.getElementById('fileInfo');
+        const error = document.getElementById('fileError');
+        const btnCancel = document.getElementById('btnCancelFile');
+        const pvPhoto = document.getElementById('pvPhoto');
+        const currentSrc = document.querySelector('#imgPreview')?.getAttribute('src') || '';
+
+        function setImage(src) {
+            frame.innerHTML = src ? '<img src="' + src + '" alt="Profil resmi" />' : '<i class="bi bi-person-bounding-box"></i>';
+            pvPhoto.innerHTML = src ? '<img src="' + src + '" alt="" />' : '<i class="bi bi-person"></i>';
+        }
+
+        fileInput.addEventListener('change', () => {
+            error.style.display = 'none';
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            if (!allowed.includes(file.type)) {
+                error.textContent = 'Sadece JPG, PNG veya WEBP yükleyebilirsiniz.';
+                error.style.display = 'block';
+                fileInput.value = '';
+                return;
+            }
+            if (file.size > MAX_MB * 1024 * 1024) {
+                error.textContent = 'Dosya boyutu ' + MAX_MB + ' MB\'ı geçemez.';
+                error.style.display = 'block';
+                fileInput.value = '';
+                return;
+            }
+
+            setImage(URL.createObjectURL(file));
+            info.textContent = file.name + ' · ' + (file.size / 1024).toFixed(0) + ' KB (kaydedince yüklenecek)';
+            btnCancel.style.display = '';
+        });
+
+        btnCancel.addEventListener('click', () => {
+            fileInput.value = '';
+            setImage(currentSrc);
+            info.textContent = 'JPG, PNG veya WEBP · en fazla 3 MB';
+            error.style.display = 'none';
+            btnCancel.style.display = 'none';
+        });
+
+        // Metin önizlemesi
+        const bind = (name, id) => {
+            const input = document.querySelector('[name="' + name + '"]');
+            const target = document.getElementById(id);
+            const update = () => target.textContent = input.value.trim() || '—';
+            input.addEventListener('input', update);
+            update();
+        };
+        bind('Title', 'pvTitle');
+        bind('SubTitle', 'pvSub');
+        bind('Description', 'pvDesc');
+    })();
+</script>

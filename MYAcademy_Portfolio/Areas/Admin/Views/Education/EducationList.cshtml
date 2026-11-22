@@ -1,0 +1,164 @@
+﻿@model List<MYAcademy_Portfolio.Entities.Education>
+
+@{
+    ViewData["Title"] = "Eğitim Bilgileri";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .edu-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+    .edu-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .edu-admin table {
+        margin: 0;
+    }
+
+    .edu-admin thead th {
+        background: #f8f7ff;
+        color: #475069;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        border-bottom: 1px solid #e9e7f5;
+        padding: 1rem 1.25rem;
+    }
+
+    .edu-admin tbody td {
+        padding: 1rem 1.25rem;
+        vertical-align: middle;
+        border-color: #f0eef9;
+    }
+
+    .edu-admin .badge-duration {
+        background: #f4f2ff;
+        color: #6d5dfc;
+        font-weight: 600;
+        border-radius: 2rem;
+        padding: .4rem .8rem;
+        font-size: .78rem;
+        white-space: nowrap;
+    }
+
+    .edu-admin .desc-cell {
+        max-width: 340px;
+        color: #6b7280;
+        font-size: .88rem;
+    }
+
+    .edu-admin .btn-act {
+        border-radius: .6rem;
+        width: 38px;
+        height: 38px;
+        display: inline-grid;
+        place-items: center;
+        border: 0;
+    }
+
+    .edu-admin .btn-edit {
+        background: #e8f8ef;
+        color: #1f9d55;
+    }
+
+        .edu-admin .btn-edit:hover {
+            background: #1f9d55;
+            color: #fff;
+        }
+
+    .edu-admin .btn-del {
+        background: #fdecec;
+        color: #dc3545;
+    }
+
+        .edu-admin .btn-del:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+</style>
+
+<div class="container-fluid edu-admin py-4">
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-box"><i class="bi bi-mortarboard"></i></div>
+            <div>
+                <h4 class="mb-0 fw-bold">Eğitim Bilgileri</h4>
+                <span class="text-secondary small">Sitedeki "Eğitim" bölümünde görünen kayıtlar.</span>
+            </div>
+        </div>
+        <span class="badge rounded-pill text-bg-light px-3 py-2">Toplam: @Model.Count kayıt</span>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-3 small py-2">
+            <i class="bi bi-check-circle-fill me-1"></i> @TempData["Success"]
+        </div>
+    }
+
+    <div class="card card-soft overflow-hidden">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Okul</th>
+                        <th>Bölüm</th>
+                        <th>Zaman</th>
+                        <th>Açıklama</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-secondary">@item.EducationId</td>
+                            <td class="fw-semibold">@item.Title</td>
+                            <td>@item.SubTitle</td>
+                            <td class="desc-cell">
+                                @(item.Description?.Length > 90 ? item.Description.Substring(0, 90) + "…" : item.Description)
+                            </td>
+                            <td><span class="badge-duration">@item.Duration</span></td>
+                            
+                            <td class="text-end">
+                                <a asp-area="Admin" asp-controller="Education" asp-action="UpdateEducation"
+                                   asp-route-id="@item.EducationId" class="btn-act btn-edit me-1" title="Güncelle">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a asp-area="Admin" asp-controller="Education" asp-action="DeleteEducation"
+                                   asp-route-id="@item.EducationId" class="btn-act btn-del" title="Sil"
+                                   onclick="return confirm('Bu kaydı silmek istediğinize emin misiniz?');">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-secondary py-5">Henüz eğitim kaydı yok.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <a href="/Admin/Education/CreateEducation/" class="btn btn-primary mt-3">Yeni Eğitim Ekle</a>
+        </div>
+    </div>
+</div>

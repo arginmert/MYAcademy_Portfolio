@@ -1,0 +1,212 @@
+﻿@model MYAcademy_Portfolio.Entities.Project
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Projeyi Güncelle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+    var categories = ViewBag.Categories as List<SelectListItem> ?? new List<SelectListItem>();
+}
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .edu-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+    .edu-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .edu-admin .form-label {
+        color: #475069;
+        font-size: .8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: .45rem;
+    }
+
+    .edu-admin .form-control,
+    .edu-admin .form-select {
+        border: 1px solid #e9e7f5;
+        border-radius: .8rem;
+        padding: .7rem 1rem;
+        font-size: .95rem;
+    }
+
+        .edu-admin .form-control:focus,
+        .edu-admin .form-select:focus {
+            border-color: #6d5dfc;
+            box-shadow: 0 0 0 .2rem rgba(109, 93, 252, .12);
+        }
+
+    .edu-admin .input-group-text {
+        background: #f8f7ff;
+        border: 1px solid #e9e7f5;
+        border-radius: .8rem;
+        color: #6d5dfc;
+    }
+
+    .edu-admin .form-hint {
+        color: #6b7280;
+        font-size: .8rem;
+        margin-top: .35rem;
+    }
+
+    .edu-admin .btn-add {
+        background: #6d5dfc;
+        color: #fff;
+        border: 0;
+        border-radius: .8rem;
+        padding: .6rem 1.4rem;
+        font-weight: 600;
+        font-size: .9rem;
+    }
+
+        .edu-admin .btn-add:hover {
+            background: #5a4be0;
+            color: #fff;
+        }
+
+    .edu-admin .btn-cancel {
+        background: #f4f2ff;
+        color: #475069;
+        border: 0;
+        border-radius: .8rem;
+        padding: .6rem 1.4rem;
+        font-weight: 600;
+        font-size: .9rem;
+        text-decoration: none;
+    }
+
+        .edu-admin .btn-cancel:hover {
+            background: #e9e7f5;
+            color: #475069;
+        }
+
+    .edu-admin .form-footer {
+        border-top: 1px solid #f0eef9;
+        padding-top: 1.25rem;
+        margin-top: 1.5rem;
+    }
+
+    .edu-admin .cover-preview {
+        margin-top: .75rem;
+        width: 100%;
+        max-height: 180px;
+        object-fit: cover;
+        border-radius: .8rem;
+        border: 1px solid #e9e7f5;
+    }
+</style>
+
+<div class="container-fluid edu-admin py-4">
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-box"><i class="bi bi-pencil-square"></i></div>
+            <div>
+                <h4 class="mb-0 fw-bold">Projeyi Güncelle</h4>
+                <span class="text-secondary small">"@Model.ProjectName" kaydını düzenliyorsunuz.</span>
+            </div>
+        </div>
+        <a href="/Admin/Project/Index" class="btn-cancel">
+            <i class="bi bi-arrow-left me-1"></i>Listeye Dön
+        </a>
+    </div>
+
+    <div class="card card-soft">
+        <div class="card-body p-4">
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger rounded-4 border-0">@ViewBag.Error</div>
+            }
+
+            <form action="/Admin/Project/UpdateProject" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ProjectId" value="@Model.ProjectId" />
+                <input type="hidden" name="CoverImageUrl" value="@Model.CoverImageUrl" />
+
+                <div class="row g-4">
+                    <div class="col-md-8">
+                        <label for="ProjectName" class="form-label">Proje Adı</label>
+                        <input type="text" id="ProjectName" name="ProjectName" class="form-control"
+                               value="@Model.ProjectName" required autofocus />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="CategoryId" class="form-label">Kategori</label>
+                        <select id="CategoryId" name="CategoryId" class="form-select" required>
+                            <option value="">Kategori seçiniz</option>
+                            @foreach (var x in categories)
+                            {
+                                <option value="@x.Value" selected="@(x.Value == Model.CategoryId.ToString())">@x.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="ProjectDescription" class="form-label">Açıklama</label>
+                        <textarea id="ProjectDescription" name="ProjectDescription" class="form-control"
+                                  rows="4" required>@Model.ProjectDescription</textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="IsActive" name="IsActive" value="true"
+                            @(Model == null || Model.IsActive ? "checked" : "") />
+                            <input type="hidden" name="IsActive" value="false" />
+                            <label class="form-check-label" for="IsActive">Proje aktif (sitede gösterilsin)</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="GithubUrl" class="form-label">GitHub Adresi</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-github"></i></span>
+                            <input type="url" id="GithubUrl" name="GithubUrl" class="form-control"
+                                   value="@Model.GithubUrl" placeholder="https://github.com/kullanici/proje" required />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="CoverImage" class="form-label">Kapak Görseli</label>
+                        <input type="file" id="CoverImage" name="CoverImage" class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp" />
+                        <div class="form-hint">Değiştirmek istemiyorsanız boş bırakın. JPG, PNG veya WEBP, en fazla 2 MB.</div>
+                        <img id="coverPreview" src="@Model.CoverImageUrl" alt="Kapak görseli"
+                             class="cover-preview @(string.IsNullOrWhiteSpace(Model.CoverImageUrl) ? "d-none" : "")" />
+                    </div>
+                </div>
+
+                <div class="form-footer d-flex justify-content-end gap-2">
+                    <a href="/Admin/Project/Index" class="btn-cancel">Vazgeç</a>
+                    <button type="submit" class="btn btn-add">
+                        <i class="bi bi-check-lg me-1"></i>Güncelle
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('CoverImage').addEventListener('change', function () {
+        var file = this.files[0];
+        if (!file) return;
+        var preview = document.getElementById('coverPreview');
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('d-none');
+    });
+</script>

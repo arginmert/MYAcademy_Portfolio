@@ -1,0 +1,453 @@
+﻿@model MYAcademy_Portfolio.Entities.Skill
+
+@{
+    ViewData["Title"] = "Yetenek Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    // Controller'dan gelen mevcut kategoriler (her kategoriden bir kayıt)
+    var categories = ViewBag.Categories as List<MYAcademy_Portfolio.Entities.Skill>
+                     ?? new List<MYAcademy_Portfolio.Entities.Skill>();
+
+    var icons = new[]
+    {
+        "bi-hdd-network", "bi-browser-chrome", "bi-database", "bi-tools", "bi-diagram-3",
+        "bi-code-slash", "bi-cpu", "bi-cloud", "bi-shield-lock", "bi-phone", "bi-terminal", "bi-gear"
+    };
+
+    var colors = new (string Class, string Hex, string Label)[]
+    {
+        ("bg-icon-purple", "#ece8ff", "Mor"),
+        ("bg-icon-blue",   "#dbeafe", "Mavi"),
+        ("bg-icon-mint",   "#d1fae5", "Nane"),
+        ("bg-icon-peach",  "#ffe4d6", "Şeftali")
+    };
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .skill-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+        .skill-admin .card-soft .card-header {
+            background: transparent;
+            border-bottom: 1px solid #eef0f6;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .skill-admin .card-soft .card-body {
+            padding: 1.5rem;
+        }
+
+    .skill-admin .form-label {
+        font-weight: 600;
+        font-size: .85rem;
+        color: #475069;
+        margin-bottom: .4rem;
+    }
+
+    .skill-admin .input-group-text {
+        background: #f4f2ff;
+        border: 1px solid #e3e0f7;
+        color: #6d5dfc;
+        border-right: 0;
+        border-radius: .75rem 0 0 .75rem;
+    }
+
+    .skill-admin .form-control, .skill-admin .form-select {
+        border: 1px solid #e3e0f7;
+        border-radius: .75rem;
+        padding: .65rem .9rem;
+    }
+
+    .skill-admin .input-group .form-control, .skill-admin .input-group .form-select {
+        border-left: 0;
+        border-radius: 0 .75rem .75rem 0;
+    }
+
+    .skill-admin .form-control:focus, .skill-admin .form-select:focus {
+        border-color: #6d5dfc;
+        box-shadow: 0 0 0 .2rem rgba(109, 93, 252, .15);
+    }
+
+    .skill-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .skill-admin .btn-primary-soft {
+        background: #6d5dfc;
+        border: 0;
+        color: #fff;
+        border-radius: .75rem;
+        padding: .7rem 1.6rem;
+        font-weight: 600;
+    }
+
+        .skill-admin .btn-primary-soft:hover {
+            background: #5847e6;
+            color: #fff;
+        }
+
+    .skill-admin .btn-ghost {
+        border: 1px solid #e3e0f7;
+        border-radius: .75rem;
+        padding: .7rem 1.4rem;
+        color: #475069;
+        background: #fff;
+    }
+
+    .skill-admin .sticky-preview {
+        position: sticky;
+        top: 1.5rem;
+    }
+
+    /* Seviye slider */
+    .skill-admin .level-wrap {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .skill-admin .level-badge {
+        min-width: 70px;
+        text-align: center;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        font-weight: 700;
+        border-radius: .75rem;
+        padding: .5rem .75rem;
+    }
+
+    .skill-admin input[type=range] {
+        accent-color: #6d5dfc;
+    }
+
+    /* İkon seçici */
+    .skill-admin .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: .5rem;
+    }
+
+        .skill-admin .icon-grid input {
+            display: none;
+        }
+
+        .skill-admin .icon-grid label {
+            height: 46px;
+            border: 1px solid #e3e0f7;
+            border-radius: .75rem;
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #475069;
+            background: #fff;
+            transition: .15s;
+        }
+
+            .skill-admin .icon-grid label:hover {
+                border-color: #6d5dfc;
+                color: #6d5dfc;
+            }
+
+        .skill-admin .icon-grid input:checked + label {
+            background: #6d5dfc;
+            border-color: #6d5dfc;
+            color: #fff;
+        }
+
+    /* Renk seçici */
+    .skill-admin .color-row {
+        display: flex;
+        gap: .75rem;
+        flex-wrap: wrap;
+    }
+
+        .skill-admin .color-row input {
+            display: none;
+        }
+
+        .skill-admin .color-row label {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .4rem .9rem .4rem .45rem;
+            border: 2px solid transparent;
+            border-radius: 2rem;
+            background: #f8f7ff;
+            cursor: pointer;
+            font-size: .85rem;
+            font-weight: 600;
+            color: #475069;
+        }
+
+        .skill-admin .color-row .swatch {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,.08);
+        }
+
+        .skill-admin .color-row input:checked + label {
+            border-color: #6d5dfc;
+            background: #fff;
+        }
+
+    /* Mevcut kategori seçilince kilitle */
+    .skill-admin .locked {
+        pointer-events: none;
+        opacity: .55;
+    }
+
+    /* Önizleme */
+    .skill-admin .pv-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+        background: #ece8ff;
+        color: #1e1b4b;
+    }
+
+    .skill-admin .skill-progress {
+        height: 8px;
+        border-radius: 1rem;
+        background: #eceaf9;
+        overflow: hidden;
+    }
+
+        .skill-admin .skill-progress .progress-bar {
+            border-radius: 1rem;
+            background: linear-gradient(90deg, #8b7dff, #6d5dfc);
+            transition: width .25s;
+        }
+</style>
+
+<div class="container-fluid skill-admin py-4">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="icon-box"><i class="bi bi-plus-circle"></i></div>
+        <div>
+            <h4 class="mb-0 fw-bold">Yetenek Düzenle</h4>
+            <span class="text-secondary small">Eklediğin yetenek sitedeki "Yeteneklerim" bölümünde görünür.</span>
+        </div>
+    </div>
+
+    <form asp-area="Admin" asp-controller="Skill" asp-action="UpdateSkill" method="post">
+        <input type="hidden" asp-for="SkillId" />
+        <div class="row g-4">
+
+            <!-- Sol: Form -->
+            <div class="col-xl-12">
+
+                <!-- Yetenek -->
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-lightning-charge me-2 text-primary"></i>Yetenek</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label asp-for="Name" class="form-label">Yetenek Adı</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                    <input asp-for="Name" class="form-control" placeholder="Örn: ASP.NET Core" />
+                                </div>
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Level" class="form-label">Seviye</label>
+                                <div class="level-wrap">
+                                    <input asp-for="Level" type="range" min="0" max="100" step="5" class="form-range flex-grow-1" id="levelInput" />
+                                    <div class="level-badge">%<span id="levelText">50</span></div>
+                                </div>
+                                <span asp-validation-for="Level" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kategori -->
+                <div class="card card-soft mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-bold"><i class="bi bi-folder2-open me-2 text-primary"></i>Kategori</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Kategori Seç</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-folder"></i></span>
+                                    <select id="categorySelect" class="form-select">
+                                        <option value="__new__">➕ Yeni kategori oluştur…</option>
+                                        @foreach (var c in categories)
+                                        {
+                                            <option value="@c.SkillCategoryTitle"
+                                                    selected="@(c.SkillCategoryTitle == Model.SkillCategoryTitle)"
+                                                    data-desc="@c.SkillCategoryDescription"
+                                                    data-icon="@c.SkillCategoryIcon"
+                                                    data-color="@c.SkillCategoryColor">@c.SkillCategoryTitle</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-text" id="catHint">Mevcut bir kategori seçersen ikon, renk ve açıklama otomatik gelir.</div>
+                            </div>
+
+                            <div class="col-12" id="titleWrap">
+                                <label asp-for="SkillCategoryTitle" class="form-label">Kategori Başlığı</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-type-h1"></i></span>
+                                    <input asp-for="SkillCategoryTitle" class="form-control" id="catTitle" placeholder="Örn: Backend Development" />
+                                </div>
+                                <span asp-validation-for="SkillCategoryTitle" class="text-danger small"></span>
+                            </div>
+
+                            <div id="catDetails" class="col-12">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label asp-for="SkillCategoryDescription" class="form-label">Kategori Açıklaması</label>
+                                        <textarea asp-for="SkillCategoryDescription" id="catDesc" rows="2" class="form-control"
+                                                  placeholder="Kartın altında görünen kısa açıklama"></textarea>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">İkon</label>
+                                        <div class="icon-grid">
+                                            @foreach (var ic in icons)
+                                            {
+                                                <input type="radio" asp-for="SkillCategoryIcon" value="@ic" id="ic_@ic" />
+                                                <label for="ic_@ic" title="@ic"><i class="bi @ic"></i></label>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">Renk</label>
+                                        <div class="color-row">
+                                            @foreach (var col in colors)
+                                            {
+                                                <input type="radio" asp-for="SkillCategoryColor" value="@col.Class" id="col_@col.Class" />
+                                                <label for="col_@col.Class">
+                                                    <span class="swatch" style="background:@col.Hex"></span>@col.Label
+                                                </label>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-area="Admin" asp-controller="Skill" asp-action="Index" class="btn btn-ghost">
+                        <i class="bi bi-arrow-left me-1"></i> Listeye Dön
+                    </a>
+                    <button type="submit" class="btn btn-primary-soft">
+                        <i class="bi bi-plus-circle me-1"></i> Yeteneği Ekle
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    (function () {
+        const hexMap = {
+            'bg-icon-purple': '#ece8ff', 'bg-icon-blue': '#dbeafe',
+            'bg-icon-mint': '#d1fae5', 'bg-icon-peach': '#ffe4d6'
+        };
+
+        const $ = id => document.getElementById(id);
+        const select = $('categorySelect');
+        const titleWrap = $('titleWrap');
+        const title = $('catTitle');
+        const desc = $('catDesc');
+        const details = $('catDetails');
+        const hint = $('catHint');
+        const nameInput = document.querySelector('[name="Name"]');
+        const level = $('levelInput');
+
+        const checkedValue = name => {
+            const el = document.querySelector('input[name="' + name + '"]:checked');
+            return el ? el.value : '';
+        };
+        const setRadio = (name, value) => {
+            const el = document.querySelector('input[name="' + name + '"][value="' + value + '"]');
+            if (el) el.checked = true;
+        };
+
+        // Önizlemeyi güncelle
+        function refresh() {
+            $('levelText').textContent = level.value;
+            $('pvLevel').textContent = level.value;
+            $('pvBar').style.width = level.value + '%';
+            $('pvName').textContent = nameInput.value.trim() || 'Yetenek adı';
+            $('pvCat').textContent = title.value.trim() || 'Kategori başlığı';
+            $('pvDesc').textContent = desc.value.trim() || 'Kategori açıklaması';
+
+            const icon = checkedValue('SkillCategoryIcon') || 'bi-hdd-network';
+            $('pvIcon').className = 'bi ' + icon;
+            $('pvIconBox').style.background = hexMap[checkedValue('SkillCategoryColor')] || '#ece8ff';
+        }
+
+        // Kategori seçimi
+        function onCategoryChange(isInit) {
+            const opt = select.options[select.selectedIndex];
+            const isNew = select.value === '__new__';
+
+            if (isNew) {
+                if (!isInit) {               // sayfa ilk açılırken değerleri silme
+                    title.value = '';
+                    desc.value = '';
+                }
+                title.readOnly = false;
+                details.classList.remove('locked');
+                hint.textContent = 'Yeni kategori için başlık, açıklama, ikon ve renk belirle.';
+            } else {
+                title.value = select.value;
+                desc.value = opt.dataset.desc || '';
+                setRadio('SkillCategoryIcon', opt.dataset.icon);
+                setRadio('SkillCategoryColor', opt.dataset.color);
+                title.readOnly = true;       // başlık görünür kalır ama değiştirilemez
+                details.classList.add('locked');
+                hint.textContent = 'Bu kategorinin ikon, renk ve açıklaması korunur. Başka bir kategoriye taşımak için listeden seç.';
+            }
+            refresh();
+        }
+
+        select.addEventListener('change', () => onCategoryChange(false));
+        // Varsayılan seçimler
+        if (!checkedValue('SkillCategoryIcon')) setRadio('SkillCategoryIcon', 'bi-hdd-network');
+        if (!checkedValue('SkillCategoryColor')) setRadio('SkillCategoryColor', 'bg-icon-purple');
+
+        // Kaydın mevcut kategorisini listede seç
+        const current = title.value;
+        if (current && Array.from(select.options).some(o => o.value === current)) {
+            select.value = current;
+        }
+        onCategoryChange(true);
+    })();
+</script>

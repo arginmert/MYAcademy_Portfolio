@@ -1,0 +1,12 @@
+﻿@model List<MYAcademy_Portfolio.Entities.SocialMedia>
+
+@foreach (var item in Model)
+{
+    var isMail = item.MediaUrl != null && item.MediaUrl.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase);
+
+    <a href="@item.MediaUrl"
+        @(isMail ? "" : "target=_blank rel=\"noopener noreferrer\"")
+       class="social-btn" aria-label="@item.MediaName" title="@item.MediaName">
+        <i class="bi @item.MediaIcon"></i>
+    </a>
+}

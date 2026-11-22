@@ -1,0 +1,285 @@
+﻿@model List<MYAcademy_Portfolio.Entities.SocialMedia>
+
+@{
+    ViewData["Title"] = "Sosyal Medya";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    var items = Model.OrderBy(x => x.SocialMediaId).ToList();
+    var activeItems = items.Where(x => x.IsActive).ToList();
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .social-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+    .social-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .social-admin thead th {
+        background: #f8f7ff;
+        color: #475069;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        border-bottom: 1px solid #e9e7f5;
+        padding: 1rem 1.25rem;
+        white-space: nowrap;
+    }
+
+    .social-admin tbody td {
+        padding: .9rem 1.25rem;
+        vertical-align: middle;
+        border-color: #f0eef9;
+    }
+
+    .social-admin tr.is-passive td {
+        background: #fafafa;
+    }
+
+    .social-admin tr.is-passive .media-ico, .social-admin tr.is-passive .fw-semibold {
+        opacity: .45;
+    }
+
+    .social-admin .media-ico {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+
+    .social-admin .url-cell {
+        max-width: 280px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .social-admin .btn-act {
+        border-radius: .6rem;
+        width: 36px;
+        height: 36px;
+        display: inline-grid;
+        place-items: center;
+        border: 0;
+        text-decoration: none;
+    }
+
+    .social-admin .btn-edit {
+        background: #e8f8ef;
+        color: #1f9d55;
+    }
+
+        .social-admin .btn-edit:hover {
+            background: #1f9d55;
+            color: #fff;
+        }
+
+    .social-admin .btn-del {
+        background: #fdecec;
+        color: #dc3545;
+    }
+
+        .social-admin .btn-del:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+
+    .social-admin .btn-primary-soft {
+        background: #6d5dfc;
+        border: 0;
+        color: #fff;
+        border-radius: .75rem;
+        padding: .75rem 1.6rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .social-admin .btn-primary-soft:hover {
+            background: #5847e6;
+            color: #fff;
+        }
+
+    /* Durum rozeti (tıklayınca aktif/pasif değişir) */
+    .social-admin .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        border-radius: 2rem;
+        padding: .35rem .85rem;
+        font-size: .78rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .15s;
+    }
+
+        .social-admin .status-pill.on {
+            background: #e8f8ef;
+            color: #1f9d55;
+        }
+
+        .social-admin .status-pill.off {
+            background: #f1f1f5;
+            color: #8a90a6;
+        }
+
+        .social-admin .status-pill:hover {
+            filter: brightness(.95);
+        }
+
+    .social-admin .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    /* Sitedeki görünüm şeridi */
+    .social-admin .strip {
+        display: flex;
+        gap: .6rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+        .social-admin .strip .s-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid #e3e0f7;
+            background: #fff;
+            color: #475069;
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+        }
+</style>
+
+<div class="container-fluid social-admin py-4">
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-box"><i class="bi bi-share"></i></div>
+            <div>
+                <h4 class="mb-0 fw-bold">Sosyal Medya</h4>
+                <span class="text-secondary small">Sadece <strong>aktif</strong> bağlantılar sitede (hero ve footer) görünür.</span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <span class="badge rounded-pill text-bg-success px-3 py-2">@activeItems.Count aktif</span>
+            <span class="badge rounded-pill text-bg-light px-3 py-2">@(items.Count - activeItems.Count) pasif</span>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-3 small py-2">
+            <i class="bi bi-check-circle-fill me-1"></i> @TempData["Success"]
+        </div>
+    }
+
+    <!-- Sitedeki görünüm -->
+    <div class="card card-soft mb-4">
+        <div class="card-body">
+            <div class="small text-secondary mb-2"><i class="bi bi-eye me-1"></i>Sitede şu an görünenler</div>
+            <div class="strip">
+                @foreach (var m in activeItems)
+                {
+                    <div class="s-btn" title="@m.MediaName"><i class="bi @m.MediaIcon"></i></div>
+                }
+                @if (!activeItems.Any())
+                {
+                    <span class="text-secondary small fst-italic">Aktif bağlantı yok, sitede sosyal medya görünmez.</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste -->
+    <div class="card card-soft overflow-hidden">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Platform</th>
+                        <th>Bağlantı</th>
+                        <th>İkon</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in items)
+                    {
+                        <tr class="@(item.IsActive ? "" : "is-passive")">
+                            <td class="text-secondary">@item.SocialMediaId</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="media-ico"><i class="bi @item.MediaIcon"></i></div>
+                                    <span class="fw-semibold">@item.MediaName</span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="@item.MediaUrl" target="_blank" rel="noopener noreferrer" class="url-cell small text-decoration-none">@item.MediaUrl</a>
+                            </td>
+                            <td><code class="small">@item.MediaIcon</code></td>
+                            <td>
+                                <a asp-area="Admin" asp-controller="SocialMedia" asp-action="ToggleSocialMedia" asp-route-id="@item.SocialMediaId"
+                                   class="status-pill @(item.IsActive ? "on" : "off")"
+                                   title="@(item.IsActive ? "Pasif yapmak için tıkla" : "Aktif yapmak için tıkla")">
+                                    <span class="status-dot"></span>@(item.IsActive ? "Aktif" : "Pasif")
+                                </a>
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a asp-area="Admin" asp-controller="SocialMedia" asp-action="UpdateSocialMedia"
+                                   asp-route-id="@item.SocialMediaId" class="btn-act btn-edit me-1" title="Güncelle">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a asp-area="Admin" asp-controller="SocialMedia" asp-action="DeleteSocialMedia"
+                                   asp-route-id="@item.SocialMediaId" class="btn-act btn-del" title="Sil"
+                                   onclick="return confirm('Bu bağlantıyı silmek istediğinize emin misiniz?');">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!items.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-secondary py-5">Henüz sosyal medya bağlantısı eklenmemiş.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Yeni ekle -->
+    <div class="mt-4">
+        <a asp-area="Admin" asp-controller="SocialMedia" asp-action="CreateSocialMedia" class="btn-primary-soft">
+            <i class="bi bi-plus-circle me-1"></i> Yeni Sosyal Medya Ekle
+        </a>
+    </div>
+</div>

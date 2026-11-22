@@ -1,0 +1,34 @@
+﻿@model MYAcademy_Portfolio.Entities.Education
+@{
+    ViewData["Title"] = "Eğitim Ekle";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<form method="post" action="/Admin/Education/UpdateEducation">
+    <div class="container">
+        <input type="hidden" asp-for="EducationId" />
+        <br />
+
+        <label>Okul</label>
+        <input type="text" asp-for="Title" name="Title" class="form-control" />
+        <br />
+
+        <label>Bölüm</label>
+        <input type="text" asp-for="SubTitle" name="SubTitle" class="form-control" />
+        <br />
+
+        <label>Açıklama</label>
+        <input type="text" asp-for="Description" name="Description" class="form-control" />
+        <br />
+
+        <label>Zaman</label>
+        <input type="text" asp-for="Duration" name="Duration" class="form-control" />
+        <br />
+
+        
+
+        <button type="submit" class="btn btn-success">Güncelle</button>
+    </div>
+</form>

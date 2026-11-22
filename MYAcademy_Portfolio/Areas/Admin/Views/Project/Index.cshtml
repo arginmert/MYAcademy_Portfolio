@@ -1,0 +1,255 @@
+﻿@model List<MYAcademy_Portfolio.Entities.Project>
+
+@{
+    ViewData["Title"] = "Projeler";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .edu-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+    .edu-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .edu-admin table {
+        margin: 0;
+    }
+
+    .edu-admin thead th {
+        background: #f8f7ff;
+        color: #475069;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        border-bottom: 1px solid #e9e7f5;
+        padding: 1rem 1.25rem;
+        white-space: nowrap;
+    }
+
+    .edu-admin tbody td {
+        padding: 1rem 1.25rem;
+        vertical-align: middle;
+        border-color: #f0eef9;
+    }
+
+    .edu-admin .cover-thumb {
+        width: 64px;
+        height: 44px;
+        border-radius: .6rem;
+        object-fit: cover;
+        background: #f4f2ff;
+    }
+
+    .edu-admin .cover-empty {
+        width: 64px;
+        height: 44px;
+        border-radius: .6rem;
+        background: #f4f2ff;
+        color: #b3abf5;
+        display: grid;
+        place-items: center;
+        font-size: 1.1rem;
+    }
+
+    .edu-admin .badge-category {
+        background: #f4f2ff;
+        color: #6d5dfc;
+        font-weight: 600;
+        border-radius: 2rem;
+        padding: .4rem .8rem;
+        font-size: .78rem;
+        white-space: nowrap;
+    }
+
+    .edu-admin .desc-cell {
+        max-width: 340px;
+        color: #6b7280;
+        font-size: .88rem;
+    }
+
+    .edu-admin .desc-clamp {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .edu-admin .link-github {
+        color: #475069;
+        text-decoration: none;
+        font-size: .88rem;
+        white-space: nowrap;
+    }
+
+        .edu-admin .link-github:hover {
+            color: #6d5dfc;
+        }
+
+    .edu-admin .btn-add {
+        background: #6d5dfc;
+        color: #fff;
+        border: 0;
+        border-radius: .8rem;
+        padding: .55rem 1.1rem;
+        font-weight: 600;
+        font-size: .9rem;
+    }
+
+        .edu-admin .btn-add:hover {
+            background: #5a4be0;
+            color: #fff;
+        }
+
+    .edu-admin .btn-act {
+        border-radius: .6rem;
+        width: 38px;
+        height: 38px;
+        display: inline-grid;
+        place-items: center;
+        border: 0;
+        text-decoration: none;
+    }
+
+    .edu-admin .btn-edit {
+        background: #e8f8ef;
+        color: #1f9d55;
+    }
+
+        .edu-admin .btn-edit:hover {
+            background: #1f9d55;
+            color: #fff;
+        }
+
+    .edu-admin .btn-del {
+        background: #fdecec;
+        color: #dc3545;
+    }
+
+        .edu-admin .btn-del:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+
+    .edu-admin .empty-state {
+        padding: 3.5rem 1rem;
+        text-align: center;
+        color: #6b7280;
+    }
+</style>
+
+<div class="container-fluid edu-admin py-4">
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-box"><i class="bi bi-kanban"></i></div>
+            <div>
+                <h4 class="mb-0 fw-bold">Projeler</h4>
+                <span class="text-secondary small">Sitedeki "Projeler" bölümünde görünen kayıtlar.</span>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge rounded-pill text-bg-light px-3 py-2">Toplam: @Model.Count kayıt</span>
+            <a href="/Admin/Project/CreateProject" class="btn btn-add">
+                <i class="bi bi-plus-lg me-1"></i>Yeni Proje
+            </a>
+        </div>
+    </div>
+
+    <div class="card card-soft overflow-hidden">
+        @if (Model.Count == 0)
+        {
+            <div class="empty-state">
+                <div class="icon-box mx-auto mb-3"><i class="bi bi-folder-plus"></i></div>
+                <p class="mb-3">Henüz proje eklenmemiş.</p>
+                <a href="/Admin/Project/CreateProject" class="btn btn-add">İlk Projeyi Ekle</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Kapak</th>
+                            <th>Proje Adı</th>
+                            <th>Kategori</th>
+                            <th>Açıklama</th>
+                            <th>GitHub</th>
+                            <th>Durum</th>
+                            
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-secondary">@item.ProjectId</td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.CoverImageUrl))
+                                    {
+                                        <img src="@item.CoverImageUrl" alt="@item.ProjectName" class="cover-thumb" />
+                                    }
+                                    else
+                                    {
+                                        <div class="cover-empty"><i class="bi bi-image"></i></div>
+                                    }
+                                </td>
+                                <td class="fw-semibold">@item.ProjectName</td>
+                                <td>
+                                    <span class="badge-category">@(item.Category?.CategoryName ?? "Kategorisiz")</span>
+                                </td>
+                                <td class="desc-cell">
+                                    <div class="desc-clamp">@item.ProjectDescription</div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.GithubUrl))
+                                    {
+                                        <a href="@item.GithubUrl" target="_blank" rel="noopener" class="link-github">
+                                            <i class="bi bi-github me-1"></i>Repo
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-secondary">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge-category" style="@(item.IsActive ? "" : "background:#f1f2f6;color:#6b7280")">
+                                        @(item.IsActive ? "Aktif" : "Pasif")
+                                    </span>
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <a href="/Admin/Project/UpdateProject/@item.ProjectId"
+                                       class="btn-act btn-edit" title="Güncelle">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="/Admin/Project/DeleteProject/@item.ProjectId"
+                                       class="btn-act btn-del" title="Sil"
+                                       onclick="return confirm('Bu projeyi silmek istediğinize emin misiniz?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

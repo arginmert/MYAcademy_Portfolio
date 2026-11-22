@@ -1,0 +1,424 @@
+﻿@model MYAcademy_Portfolio.Entities.Contact
+using MYAcademy_Portfolio.Entities;
+
+@{
+    ViewData["Title"] = "İletişim Bilgileri";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+
+    // Kayıt yoksa ya da form hatalıysa doğrudan düzenleme modunda aç
+    bool startInEdit = Model.ContactId == 0 || !ViewData.ModelState.IsValid;
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .contact-admin .card-soft {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(30, 27, 75, .07);
+    }
+
+        .contact-admin .card-soft .card-header {
+            background: transparent;
+            border-bottom: 1px solid #eef0f6;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .contact-admin .card-soft .card-body {
+            padding: 1.5rem;
+        }
+
+    .contact-admin .form-label {
+        font-weight: 600;
+        font-size: .85rem;
+        color: #475069;
+        margin-bottom: .4rem;
+    }
+
+    .contact-admin .input-group-text {
+        background: #f4f2ff;
+        border: 1px solid #e3e0f7;
+        color: #6d5dfc;
+        border-right: 0;
+        border-radius: .75rem 0 0 .75rem;
+    }
+
+    .contact-admin .form-control {
+        border: 1px solid #e3e0f7;
+        padding: .65rem .9rem;
+        border-left: 0;
+        border-radius: 0;
+    }
+
+    .contact-admin textarea.form-control {
+        border-left: 1px solid #e3e0f7;
+        border-radius: .75rem;
+    }
+
+    .contact-admin .form-control:focus {
+        border-color: #6d5dfc;
+        box-shadow: 0 0 0 .2rem rgba(109, 93, 252, .15);
+    }
+
+    .contact-admin .btn-clear {
+        border: 1px solid #e3e0f7;
+        border-left: 0;
+        background: #fff;
+        color: #dc3545;
+        border-radius: 0 .75rem .75rem 0;
+        padding: 0 .9rem;
+    }
+
+        .contact-admin .btn-clear:hover {
+            background: #fdecec;
+        }
+
+    .contact-admin .icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #f4f2ff;
+        color: #6d5dfc;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+    }
+
+    .contact-admin .btn-primary-soft {
+        background: #6d5dfc;
+        border: 0;
+        color: #fff;
+        border-radius: .75rem;
+        padding: .7rem 1.6rem;
+        font-weight: 600;
+    }
+
+        .contact-admin .btn-primary-soft:hover {
+            background: #5847e6;
+            color: #fff;
+        }
+
+    .contact-admin .btn-ghost {
+        border: 1px solid #e3e0f7;
+        border-radius: .75rem;
+        padding: .7rem 1.4rem;
+        color: #475069;
+        background: #fff;
+    }
+
+    .contact-admin .hidden-badge {
+        font-size: .72rem;
+        color: #b45309;
+        background: #fef3c7;
+        border-radius: 2rem;
+        padding: .15rem .6rem;
+        margin-left: .5rem;
+        display: none;
+    }
+
+    .contact-admin .field.is-empty .hidden-badge {
+        display: inline-block;
+    }
+
+    /* Görüntüleme modu */
+    .contact-admin .pv-item {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        padding: .9rem 0;
+        border-bottom: 1px dashed #e9e7f5;
+    }
+
+        .contact-admin .pv-item:last-of-type {
+            border-bottom: 0;
+        }
+
+    .contact-admin .pv-ico {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .contact-admin .pv-empty {
+        color: #9aa0b4;
+        font-style: italic;
+        font-weight: 400;
+    }
+
+    .contact-admin .pv-note {
+        border: 1px solid #e3e0f7;
+        border-radius: .9rem;
+        padding: .7rem 1rem;
+        font-size: .88rem;
+        color: #6b7280;
+        background: #fff;
+    }
+
+    .contact-admin .tag-hidden {
+        font-size: .7rem;
+        color: #b45309;
+        background: #fef3c7;
+        border-radius: 2rem;
+        padding: .1rem .55rem;
+        margin-left: .4rem;
+    }
+</style>
+
+<div class="container-fluid contact-admin py-4">
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-box"><i class="bi bi-telephone"></i></div>
+            <div>
+                <h4 class="mb-0 fw-bold">İletişim Bilgileri</h4>
+                <span class="text-secondary small">Boş bıraktığın alan sitede gösterilmez.</span>
+            </div>
+        </div>
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mb-0 py-2 px-3 rounded-3 small">
+                <i class="bi bi-check-circle-fill me-1"></i> @TempData["Success"]
+            </div>
+        }
+    </div>
+
+    <!-- ===== GÖRÜNTÜLEME MODU ===== -->
+    <div id="viewMode" style="@(startInEdit ? "display:none" : "")">
+        <div class="card card-soft">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-eye me-2 text-primary"></i>Kayıtlı Bilgiler</h6>
+                <button type="button" class="btn btn-primary-soft py-2" id="btnEdit">
+                    <i class="bi bi-pencil-square me-1"></i> Düzenle
+                </button>
+            </div>
+            <div class="card-body">
+
+                <div class="mb-4">
+                    <div class="small text-secondary mb-1">Ana Açıklama</div>
+                    @if (string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <span class="pv-empty">Girilmemiş</span><span class="tag-hidden">Sitede gizli</span>
+                    }
+                    else
+                    {
+                        <p class="mb-0">@Model.Description</p>
+                    }
+                </div>
+
+                <div class="pv-item">
+                    <div class="pv-ico" style="background:#ece8ff;color:#6d5dfc"><i class="bi bi-envelope"></i></div>
+                    <div>
+                        <div class="small text-secondary">E-posta</div>
+                        @if (string.IsNullOrWhiteSpace(Model.Email))
+                        {
+                            <span class="pv-empty">Girilmemiş</span><span class="tag-hidden">Sitede gizli</span>
+                        }
+                        else
+                        {
+
+                            <div class="fw-semibold">@Model.Email</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="pv-item">
+                    <div class="pv-ico" style="background:#dbeafe;color:#3b82f6"><i class="bi bi-geo-alt"></i></div>
+                    <div>
+                        <div class="small text-secondary">Konum</div>
+                        @if (string.IsNullOrWhiteSpace(Model.Location))
+                        {
+                            <span class="pv-empty">Girilmemiş</span><span class="tag-hidden">Sitede gizli</span>
+                        }
+                        else
+                        {
+
+                            <div class="fw-semibold">@Model.Location</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="pv-item">
+                    <div class="pv-ico" style="background:#d1fae5;color:#059669"><i class="bi bi-linkedin"></i></div>
+                    <div>
+                        <div class="small text-secondary">LinkedIn</div>
+                        @if (string.IsNullOrWhiteSpace(Model.Linkedin))
+                        {
+                            <span class="pv-empty">Girilmemiş</span><span class="tag-hidden">Sitede gizli</span>
+                        }
+                        else
+                        {
+
+                            <div class="fw-semibold">@Model.Linkedin</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="pv-item">
+                    <div class="pv-ico" style="background:#ffe4d6;color:#ea580c"><i class="bi bi-github"></i></div>
+                    <div>
+                        <div class="small text-secondary">GitHub</div>
+                        @if (string.IsNullOrWhiteSpace(Model.Github))
+                        {
+                            <span class="pv-empty">Girilmemiş</span><span class="tag-hidden">Sitede gizli</span>
+                        }
+                        else
+                        {
+
+                            <div class="fw-semibold">@Model.Github</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <div class="small text-secondary mb-1">Alt Not</div>
+                    @if (string.IsNullOrWhiteSpace(Model.SubDescription))
+                    {
+                        <span class="pv-empty">Girilmemiş</span><span class="tag-hidden">Sitede gizli</span>
+                    }
+                    else
+                    {
+                        <div class="pv-note"><i class="bi bi-clock me-1 text-primary"></i>@Model.SubDescription</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== DÜZENLEME MODU ===== -->
+    <div id="editMode" style="@(startInEdit ? "" : "display:none")">
+        <form asp-area="Admin" asp-controller="Contact" asp-action="Index" method="post" id="contactForm">
+            <input type="hidden" asp-for="ContactId" />
+
+            <div class="card card-soft mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-chat-text me-2 text-primary"></i>Açıklamalar</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 field">
+                        <label asp-for="Description" class="form-label">Ana Açıklama<span class="hidden-badge">Sitede gizli</span></label>
+                        <textarea asp-for="Description" rows="3" class="form-control" placeholder="Aşağıdaki iletişim kanalları üzerinden…"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="SubDescription" class="form-label">Alt Not<span class="hidden-badge">Sitede gizli</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                            <input asp-for="SubDescription" class="form-control" placeholder="Genelde 12 saat içinde dönüş yapmaktayım." />
+                            <button type="button" class="btn-clear" title="Temizle"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-soft mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-person-lines-fill me-2 text-primary"></i>İletişim Kanalları</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 field">
+                        <label asp-for="Email" class="form-label">E-posta<span class="hidden-badge">Sitede gizli</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="ornek@mail.com" />
+                            <button type="button" class="btn-clear" title="Temizle"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3 field">
+                        <label asp-for="Location" class="form-label">Konum<span class="hidden-badge">Sitede gizli</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                            <input asp-for="Location" class="form-control" placeholder="İstanbul/Türkiye" />
+                            <button type="button" class="btn-clear" title="Temizle"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 field">
+                        <label asp-for="Linkedin" class="form-label">LinkedIn<span class="hidden-badge">Sitede gizli</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-linkedin"></i></span>
+                            <input asp-for="Linkedin" class="form-control" placeholder="linkedin.com/kullaniciadi" />
+                            <button type="button" class="btn-clear" title="Temizle"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Github" class="form-label">GitHub<span class="hidden-badge">Sitede gizli</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-github"></i></span>
+                            <input asp-for="Github" class="form-control" placeholder="github.com/kullaniciadi" />
+                            <button type="button" class="btn-clear" title="Temizle"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                @if (Model.ContactId != 0)
+                {
+                    <button type="button" class="btn btn-ghost" id="btnCancel">
+                        <i class="bi bi-x-lg me-1"></i> Vazgeç
+                    </button>
+                }
+                <button type="submit" class="btn btn-primary-soft">
+                    <i class="bi bi-check2-circle me-1"></i> Değişiklikleri Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    (function () {
+        const viewMode = document.getElementById('viewMode');
+        const editMode = document.getElementById('editMode');
+        const form = document.getElementById('contactForm');
+
+        // "Sitede gizli" rozetini boş alanlarda göster
+        function refreshBadges() {
+            form.querySelectorAll('.field').forEach(field => {
+                const input = field.querySelector('input:not([type=hidden]), textarea');
+                if (input) field.classList.toggle('is-empty', !input.value.trim());
+            });
+        }
+
+        function showEdit() {
+            viewMode.style.display = 'none';
+            editMode.style.display = '';
+            refreshBadges();
+        }
+
+        function showView() {
+            form.reset();                 // yapılan değişiklikleri geri al
+            editMode.style.display = 'none';
+            viewMode.style.display = '';
+        }
+
+        const btnEdit = document.getElementById('btnEdit');
+        const btnCancel = document.getElementById('btnCancel');
+        if (btnEdit) btnEdit.addEventListener('click', showEdit);
+        if (btnCancel) btnCancel.addEventListener('click', showView);
+
+        // Temizle butonları: alanı boşaltır (kaydedilince sitede gizlenir)
+        form.querySelectorAll('.btn-clear').forEach(btn => btn.addEventListener('click', () => {
+            const input = btn.parentElement.querySelector('input');
+            input.value = '';
+            input.focus();
+            refreshBadges();
+        }));
+
+        form.querySelectorAll('input, textarea').forEach(el => el.addEventListener('input', refreshBadges));
+
+        refreshBadges();
+    })();
+</script>
